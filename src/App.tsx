@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useMemo, useCallback } from "react";
+import React, { ChangeEvent, useState, useCallback } from "react";
 import {
   Grid,
   Container,
@@ -24,6 +24,7 @@ function App() {
     isValid: true,
     tree: null,
   });
+  const [showOutput, setShowOutput] = useState(false)
 
   const convertArrToObj = useCallback((arr): BinTreeNode | null => {
     return arr && arr.length
@@ -89,6 +90,29 @@ function App() {
             Fetch
           </Button>
         </Grid>
+        <Grid item xs={12}>
+          <TextField
+            multiline
+            rows={21}
+            fullWidth
+            variant="outlined"
+            value={
+              convertedJSON.tree
+                ? JSON.stringify(convertedJSON.tree, null, 2)
+                : ""
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button
+            disabled={!convertedJSON.isValid}
+            color="primary"
+            variant="contained"
+          >
+            Process
+          </Button>
+        </Grid>
+        {showOutput && ()}
       </Grid>
     </Container>
   );
