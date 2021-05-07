@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useCallback } from "react";
+import { ChangeEvent, useState, useCallback, ReactNode, useRef } from "react";
 import {
   Grid,
   Container,
@@ -6,6 +6,15 @@ import {
   Button,
   Typography,
 } from "@material-ui/core";
+import { TreeView } from "@material-ui/lab";
+// Local
+
+import StyledTreeItem from "./components/styledTreeItem";
+import {
+  CloseSquare,
+  MinusSquare,
+  PlusSquare,
+} from "./components/svgComponent";
 
 interface BinTreeNode {
   id: string | number;
@@ -24,8 +33,7 @@ function App() {
     isValid: true,
     tree: null,
   });
-  const [showOutput, setShowOutput] = useState(false)
-
+  const [showOutput, setShowOutput] = useState<boolean>(false);
   const convertArrToObj = useCallback((arr): BinTreeNode | null => {
     return arr && arr.length
       ? {
@@ -40,7 +48,9 @@ function App() {
       : null;
   }, []);
 
-  const fetch = useCallback(() => {
+  const deepestElement = useRef<HTMLElement>(null);
+
+  const fetch = useCallback((): void => {
     const tempConvertedJSON: ConvertedJSON = {
       isValid: true,
       tree: null,
@@ -64,55 +74,120 @@ function App() {
     // eslint-disable-next-line
   }, [input]);
 
+  const makeRecursiveTreeItem = useCallback(
+    (obj: BinTreeNode | null, startIndex: number = 0, prefix : string = "init"): ReactNode => {
+      if (obj) {
+        return (Object.keys(obj) as Array<keyof typeof obj>).map((k, i) => {
+          if (typeof obj[k] === "string" || typeof obj[k] === "number") {
+            return (
+              <StyledTreeItem
+                key={`${prefix}-${startIndex}-${i}`}
+                nodeId={`${prefix}-${startIndex}-${i}`}
+                label={obj[k]}
+                ref={deepestElement}
+              />
+            );
+          } else {
+            return (
+              <StyledTreeItem
+                key={`${prefix}-${startIndex}-${i}`}
+                nodeId={`${prefix}-${startIndex}-${i}`}
+                ref={deepestElement}
+                label={k}
+              >
+                {makeRecursiveTreeItem(
+                  obj[k] as BinTreeNode | null,
+                  ++startIndex,
+                  k
+                )}
+              </StyledTreeItem>
+            );
+          }
+        });
+      } else {
+        return (
+          <StyledTreeItem
+            key={`empty-${prefix}-${startIndex}`}
+            nodeId={`empty-${prefix}-${startIndex}`}
+            label="< empty >"
+            ref={deepestElement}
+          />
+        );
+      }
+    },
+    []
+  );
+
   console.log(convertedJSON, "convertedJSON");
 
   return (
-    <Container maxWidth="sm">
+    <Container>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Typography variant="h6">Process the input into a tree</Typography>
+        <Grid item xs={12} md={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h6">
+                Process the input into a tree
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Tree Source"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setShowOutput(false);
+                  setInput(e.target.value);
+                }}
+                error={!convertedJSON.isValid}
+                {...(!convertedJSON.isValid && {
+                  helperText: `Please add an array as input eg. ["a", ["b"], ["c"]]`,
+                })}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button onClick={fetch} variant="contained" color="primary">
+                Fetch
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                multiline
+                rows={21}
+                fullWidth
+                variant="outlined"
+                value={
+                  convertedJSON.tree
+                    ? JSON.stringify(convertedJSON.tree, null, 2)
+                    : ""
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                onClick={() => {
+                  setShowOutput(true);
+                }}
+                disabled={!convertedJSON.isValid}
+                color="primary"
+                variant="contained"
+              >
+                Process
+              </Button>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="Tree Source"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setInput(e.target.value);
-            }}
-            error={!convertedJSON.isValid}
-            {...(!convertedJSON.isValid && {
-              helperText: `Please add an array as input eg. ["a", ["b"], ["c"]]`,
-            })}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button onClick={fetch} variant="contained" color="primary">
-            Fetch
-          </Button>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            multiline
-            rows={21}
-            fullWidth
-            variant="outlined"
-            value={
-              convertedJSON.tree
-                ? JSON.stringify(convertedJSON.tree, null, 2)
-                : ""
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            disabled={!convertedJSON.isValid}
-            color="primary"
-            variant="contained"
-          >
-            Process
-          </Button>
-        </Grid>
-        {showOutput && ()}
+        {showOutput && (
+          <Grid item xs={12} md={6}>
+            <TreeView
+              defaultExpanded={["1"]}
+              defaultCollapseIcon={<MinusSquare />}
+              defaultExpandIcon={<PlusSquare />}
+              defaultEndIcon={<CloseSquare />}
+            >
+              {makeRecursiveTreeItem(convertedJSON.tree)}
+            </TreeView>
+          </Grid>
+        )}
       </Grid>
     </Container>
   );
