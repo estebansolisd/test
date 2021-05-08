@@ -10,21 +10,23 @@ import { useSpring, animated } from "react-spring/web"; // web.cjs is required f
 import { TransitionProps } from "@material-ui/core/transitions";
 import { forwardRef } from "react";
 
-function TransitionComponent(props: TransitionProps) {
-  const style = useSpring({
-    from: { opacity: 0, transform: "translate3d(20px,0,0)" },
-    to: {
-      opacity: props.in ? 1 : 0,
-      transform: `translate3d(${props.in ? 0 : 20}px,0,0)`,
-    },
-  });
+const TransitionComponent = forwardRef<HTMLDivElement, TransitionProps>(
+  (props, ref) => {
+    const style = useSpring({
+      from: { opacity: 0, transform: "translate3d(20px,0,0)" },
+      to: {
+        opacity: props.in ? 1 : 0,
+        transform: `translate3d(${props.in ? 0 : 20}px,0,0)`,
+      },
+    });
 
-  return (
-    <animated.div style={style}>
-      <Collapse {...props} />
-    </animated.div>
-  );
-}
+    return (
+      <animated.div ref={ref} style={style}>
+        <Collapse {...props} />
+      </animated.div>
+    );
+  }
+);
 
 const StyledTreeItem = withStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +46,5 @@ const StyledTreeItem = withStyles((theme: Theme) =>
     <TreeItem ref={ref} {...props} TransitionComponent={TransitionComponent} />
   ))
 );
-
 
 export default StyledTreeItem;

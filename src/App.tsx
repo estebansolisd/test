@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useCallback, ReactNode, useRef } from "react";
+import { ChangeEvent, useState, useCallback, ReactNode, useRef, useEffect } from "react";
 import {
   Grid,
   Container,
@@ -75,7 +75,11 @@ function App() {
   }, [input]);
 
   const makeRecursiveTreeItem = useCallback(
-    (obj: BinTreeNode | null, startIndex: number = 0, prefix : string = "init"): ReactNode => {
+    (
+      obj: BinTreeNode | null,
+      startIndex: number = 0,
+      prefix: string = "init"
+    ): ReactNode => {
       if (obj) {
         return (Object.keys(obj) as Array<keyof typeof obj>).map((k, i) => {
           if (typeof obj[k] === "string" || typeof obj[k] === "number") {
