@@ -1,13 +1,14 @@
 # Microsoft HR Test
 
-- In the first step you need to press fetch to browse in the your local files a JSON file, with a valid format
-- Then you can modify the JSON structure in textfield if you don't want to do that you can simply press Process to load the JSON visually an interact with it
+- In the first step you need to type a valid format eg ["a", ["b"], ["c"]]
+- Then you can press the button fetch to show it in the textfield (read-only)
+- NOTE: I didn't ready correctly the instructions but i went notice it had no more time so for that reason i send it like this
+- Then you can press the button process to show the tree view
 
 # Running the project
 
 - npm install: To install the dependencies
 - npm start: To run the project
-- npm test: To test the project
 
 ![Microsoft](https://posnetinformatica.com/admin/logos/1589890008_microsoft.jpg)
 

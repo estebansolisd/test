@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useCallback, ReactNode, useRef, useEffect } from "react";
+import { ChangeEvent, useState, useCallback, ReactNode} from "react";
 import {
   Grid,
   Container,
@@ -48,7 +48,6 @@ function App() {
       : null;
   }, []);
 
-  const deepestElement = useRef<HTMLElement>(null);
 
   const fetch = useCallback((): void => {
     const tempConvertedJSON: ConvertedJSON = {
@@ -88,7 +87,6 @@ function App() {
                 key={`${prefix}-${startIndex}-${i}`}
                 nodeId={`${prefix}-${startIndex}-${i}`}
                 label={obj[k]}
-                ref={deepestElement}
               />
             );
           } else {
@@ -96,7 +94,6 @@ function App() {
               <StyledTreeItem
                 key={`${prefix}-${startIndex}-${i}`}
                 nodeId={`${prefix}-${startIndex}-${i}`}
-                ref={deepestElement}
                 label={k}
               >
                 {makeRecursiveTreeItem(
@@ -114,7 +111,6 @@ function App() {
             key={`empty-${prefix}-${startIndex}`}
             nodeId={`empty-${prefix}-${startIndex}`}
             label="< empty >"
-            ref={deepestElement}
           />
         );
       }
